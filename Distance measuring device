@@ -1,0 +1,94 @@
+ #include <LiquidCrystal.h>
+  
+  #define echo 2
+  #define trig 3
+  
+  float  duration;
+  float  distance;
+  
+  LiquidCrystal lcd(13, 12, 11, 10, 9, 8); 
+  
+  int buzzer = 7;
+  
+  int red = 6;
+  int yellow = 5;
+  int green = 4;
+
+  void setup() {
+  
+    pinMode(trig, OUTPUT);
+    pinMode(echo, INPUT);
+    
+    pinMode(buzzer, OUTPUT);
+    
+    pinMode(6, OUTPUT);
+ 	pinMode(5, OUTPUT);
+ 	pinMode(4, OUTPUT);
+    
+    Serial.begin(9600);
+    lcd.begin(16, 2);
+  
+  }
+  
+  void loop() {
+  
+    time_Measurement();
+    distance = duration * (0.0343) / 2;   
+    display_distance(); 
+    
+    if(distance > 20)
+	 {
+	 	digitalWrite(6, LOW);
+	 	digitalWrite(5, LOW);
+	 	digitalWrite(4, HIGH);
+	 }
+	 
+	if(distance > 10 && distance <= 20)
+	 {
+	 	digitalWrite(6, LOW);
+	 	digitalWrite(5, HIGH);
+	 	digitalWrite(4, LOW);
+	 }
+	 
+	if(distance < 10)
+	 {
+	 	digitalWrite(6, HIGH);
+	 	digitalWrite(5, LOW);
+	 	digitalWrite(4, LOW);
+	 	
+	 	tone(buzzer, 650, 100);
+	 	delay(100);
+	 	tone(buzzer, 550, 100);
+	 	delay(100);
+	 	tone(buzzer, 650, 100);
+	 	delay(100);
+	 	tone(buzzer, 550, 100);
+	 	delay(300);
+	 }
+    
+  }
+  
+  void time_Measurement()
+  {
+    digitalWrite(trig, LOW);
+    delayMicroseconds(2);
+  
+    digitalWrite(trig, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trig, LOW);
+  
+    duration = pulseIn(echo, HIGH);
+  }
+
+  void display_distance()
+  {
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    Serial.print("Distance in Cm: ");
+    Serial.print(distance);
+    Serial.println();
+    lcd.print("Distance in Cm: ");
+    lcd.setCursor(5, 1);
+    lcd.print(distance);
+    delay(1000);
+   }
